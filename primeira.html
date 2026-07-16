@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>⚡ Friends Quiz • Temporada 1</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(145deg, #0b1a2e 0%, #1c3a5a 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    /* ── BOTÃO MENU ── */
+    .menu-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 18px;
+      cursor: pointer;
+      z-index: 9999;
+      background: linear-gradient(145deg, #5a3724, #2b1b12);
+      color: white;
+      font-size: 30px;
+      box-shadow: 0 0 15px rgba(0,0,0,.4), 0 0 0 3px #b68b2d;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(182, 139, 45, 0.5), 0 0 0 3px #b68b2d;
+    }
+
+    .menu-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* ── MENU LATERAL ── */
+    .menu {
+      position: fixed;
+      top: 0;
+      left: -340px;
+      width: 320px;
+      height: 100%;
+      background: linear-gradient(180deg, #3d2417, #21120c);
+      transition: .45s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+      box-shadow: 8px 0 30px rgba(0,0,0,.5);
+      z-index: 9998;
+      border-right: 4px solid #b68b2d;
+      padding-bottom: 30px;
+    }
+
+    .menu.open {
+      left: 0;
+    }
+
+    /* ── CABEÇALHO DO MENU ── */
+    .menu-header {
+      padding: 35px 20px 25px;
+      text-align: center;
+      border-bottom: 2px solid rgba(255,255,255,.1);
+    }
+
+    .menu-header h2 {
+      font-family: "Playfair Display", serif;
+      color: #fff;
+      font-size: 34px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 20px rgba(182, 139, 45, 0.3);
+    }
+
+    .lights {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .light {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .red { background: #ff4141; color: #ff4141; }
+    .blue { background: #00bfff; color: #00bfff; }
+    .yellow { background: #ffd500; color: #ffd500; }
+
+    /* ── LINKS DO MENU ── */
+    .menu a {
+      display: block;
+      text-decoration: none;
+      color: white;
+      padding: 18px 24px;
+      margin: 10px 15px;
+      border-radius: 14px;
+      transition: .25s;
+      background: rgba(255,255,255,.05);
+      border: 2px solid transparent;
+      font-weight: 600;
+      font-size: 0.95rem;
+      position: relative;
+    }
+
+    .menu a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 0;
+      background: #b68b2d;
+      transition: height 0.3s ease;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .menu a:hover::before {
+      height: 70%;
+    }
+
+    .menu a:hover {
+      background: #b68b2d;
+      color: #222;
+      transform: translateX(8px);
+      border-color: #d4a53a;
+    }
+
+    .menu a.active {
+      background: #b68b2d;
+      color: #222;
+      border-color: #d4a53a;
+    }
+
+    .menu a.active::before {
+      height: 70%;
+    }
+
+    /* ── OVERLAY ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      opacity: 0;
+      visibility: hidden;
+      transition: .4s;
+      z-index: 9997;
+      backdrop-filter: blur(4px);
+    }
+
+    .overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* ── CARD DO QUIZ ── */
+    .quiz-wrapper {
+      max-width: 680px;
+      width: 100%;
+      margin: 80px auto 20px;
+    }
+
+    .quiz-card {
+      width: 100%;
+      background: rgba(255, 242, 220, 0.95);
+      backdrop-filter: blur(4px);
+      border-radius: 48px 48px 40px 40px;
+      padding: 28px 24px 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 2px #f7d44a inset, 0 0 0 4px #b8860b inset;
+      transition: all 0.2s;
+      border: 1px solid #fae07a;
+      position: relative;
+    }
+
+    .header-friends {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-icon {
+      font-size: 2.5rem;
+      line-height: 1;
+      filter: drop-shadow(0 4px 6px #00000055);
+    }
+
+    .title {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #2d1b0e;
+      text-shadow: 2px 2px 0 #f3c74d, 4px 4px 0 #7f4f1a;
+      background: linear-gradient(180deg, #fae07a, #ca9e2e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-family: 'Playfair Display', 'Segoe UI', cursive;
+    }
+
+    .badge-season {
+      background: #1f2e3b;
+      padding: 6px 16px;
+      border-radius: 50px;
+      color: #f7e7b0;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      border: 1px solid #e4b13a;
+      box-shadow: inset 0 -2px 0 #7f5f1a;
+      white-space: nowrap;
+    }
+
+    .progress-area {
+      background: #271f14c9;
+      backdrop-filter: blur(2px);
+      padding: 12px 16px;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-bottom: 24px;
+      border: 1px solid #dbb042;
+      box-shadow: 0 4px 0 #6b4f1a;
+    }
+
+    .counter {
+      color: #ffefc0;
+      font-weight: 600;
+      font-size: 1rem;
+      background: #16100b;
+      padding: 4px 18px;
+      border-radius: 40px;
+      border: 1px solid #dba73a;
+    }
+
+    .score {
+      background: #fadf8a;
+      color: #1f2a1f;
+      font-weight: 700;
+      padding: 4px 20px;
+      border-radius: 40px;
+      font-size: 1.1rem;
+      box-shadow: inset 0 -3px 0 #96742a;
+    }
+
+    .question-box {
+      background: #fcf3e0;
+      padding: 20px 18px;
+      border-radius: 32px;
+      margin-bottom: 28px;
+      border: 2px solid #c99f3c;
+      box-shadow: inset 0 4px 10px rgba(0,0,0,0.05), 0 8px 0 #7d5d20;
+    }
+
+    .question-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.3;
+      color: #221c12;
+      text-shadow: 0 2px 0 #dbb85c;
+      word-break: break-word;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .option-btn {
+      background: #f6ebd4;
+      border: 2px solid #b68f3a;
+      border-radius: 60px;
+      padding: 16px 22px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #1d1a12;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 6px 0 #7f6224, 0 6px 12px rgba(0,0,0,0.2);
+      transition: all 0.08s linear;
+      cursor: pointer;
+      touch-action: manipulation;
+      letter-spacing: 0.3px;
+      word-break: break-word;
+    }
+
+    .option-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #7f6224;
+    }
+
+    .option-btn.disabled-true {
+      opacity: 0.7;
+      pointer-events: none;
+      filter: grayscale(0.3);
+    }
+
+    .option-btn.correct {
+      background: #9bc88a;
+      border-color: #2b6e2b;
+      box-shadow: 0 4px 0 #1e4f1e;
+      transform: translateY(2px);
+      color: #0a2f0a;
+    }
+
+    .option-btn.wrong {
+      background: #d97a7a;
+      border-color: #9e3d3d;
+      box-shadow: 0 4px 0 #702b2b;
+      transform: translateY(2px);
+      color: #2f0a0a;
+    }
+
+    .option-btn .letter {
+      background: #1f2a36;
+      color: #f5dd9a;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      border: 2px solid #dba73a;
+      box-shadow: inset 0 -3px 0 #3d2e0e;
+    }
+
+    .option-btn.correct .letter {
+      background: #1b6b1b;
+      border-color: #b3d98a;
+      color: white;
+    }
+
+    .option-btn.wrong .letter {
+      background: #882c2c;
+      border-color: #d98a8a;
+      color: white;
+    }
+
+    .next-btn {
+      background: #d9a73a;
+      border: none;
+      border-radius: 60px;
+      padding: 18px 10px;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #1c1a0e;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      box-shadow: 0 8px 0 #7a571a, 0 6px 16px #00000050;
+      transition: all 0.1s ease;
+      cursor: pointer;
+      touch-action: manipulation;
+      border: 1px solid #f5d97a;
+      text-shadow: 0 2px 0 #e9c35c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .next-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #7a571a;
+    }
+
+    .next-btn:disabled {
+      opacity: 0.45;
+      transform: translateY(4px);
+      box-shadow: 0 4px 0 #7a571a;
+      pointer-events: none;
+    }
+
+    .result-area {
+      background: #1f2a1f;
+      border-radius: 40px;
+      padding: 20px 18px;
+      text-align: center;
+      border: 3px solid #f2c84b;
+      margin-top: 6px;
+      box-shadow: inset 0 0 20px #00000077;
+    }
+
+    .result-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #f7e393;
+      text-shadow: 0 4px 0 #7f581a;
+      letter-spacing: 2px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .result-score {
+      font-size: 3.8rem;
+      font-weight: 900;
+      color: #fadf7a;
+      text-shadow: 0 6px 0 #4f3a0e;
+      margin: 4px 0;
+    }
+
+    .result-message {
+      font-size: 1.3rem;
+      color: #f0ddb4;
+      background: #2c3b2c;
+      padding: 12px 10px;
+      border-radius: 60px;
+      margin-top: 12px;
+      border: 1px solid #b18a34;
+    }
+
+    .restart-btn {
+      margin-top: 20px;
+      background: #d9a73a;
+      border: none;
+      border-radius: 60px;
+      padding: 14px 20px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1c1a0e;
+      width: 100%;
+      box-shadow: 0 6px 0 #7a571a;
+      transition: 0.08s linear;
+      cursor: pointer;
+      touch-action: manipulation;
+      border: 1px solid #f5d97a;
+    }
+
+    .restart-btn:active {
+      transform: translateY(5px);
+      box-shadow: 0 1px 0 #7a571a;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      text-align: center;
+      color: #dbb85c;
+      font-weight: 500;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      letter-spacing: 1px;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 700px) {
+      .menu {
+        width: 85%;
+      }
+
+      .menu-btn {
+        width: 55px;
+        height: 55px;
+        font-size: 28px;
+        top: 15px;
+        left: 15px;
+      }
+
+      .quiz-wrapper {
+        margin: 75px auto 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .quiz-card { padding: 16px 12px 24px; }
+      .title { font-size: 1.7rem; }
+      .question-text { font-size: 1.25rem; }
+      .option-btn { padding: 14px 16px; font-size: 1rem; }
+      .option-btn .letter { width: 32px; height: 32px; font-size: 1rem; }
+      .next-btn { font-size: 1.4rem; padding: 14px 10px; }
+      .result-title { font-size: 1.8rem; }
+      .result-score { font-size: 3rem; }
+      .badge-season { font-size: 0.7rem; padding: 4px 12px; }
+      .menu-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+        top: 12px;
+        left: 12px;
+      }
+      .quiz-wrapper {
+        margin: 68px auto 20px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .header-friends { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ── SCROLLBAR MENU ── */
+    .menu::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .menu::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .menu::-webkit-scrollbar-thumb {
+      background: #b68b2d;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── BOTÃO MENU ─── -->
+  <button class="menu-btn" onclick="toggleMenu()" aria-label="Abrir menu">☰</button>
+
+  <!-- ─── OVERLAY ─── -->
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+  <!-- ─── MENU LATERAL ─── -->
+  <div class="menu" id="menu">
+    <div class="menu-header">
+      <h2>FRIENDS</h2>
+      <div class="lights">
+        <div class="light red"></div>
+        <div class="light blue"></div>
+        <div class="light yellow"></div>
+        <div class="light red"></div>
+        <div class="light blue"></div>
+        <div class="light yellow"></div>
+      </div>
+    </div>
+
+    <a href="primeira.html" class="active">☕ Primeira Temporada</a>
+    <a href="segunda.html">☕ Segunda Temporada</a>
+    <a href="terceira.html">☕ Terceira Temporada</a>
+    <a href="quarta.html">☕ Quarta Temporada</a>
+    <a href="quinta.html">☕ Quinta Temporada</a>
+    <a href="sexta.html">☕ Sexta Temporada</a>
+    <a href="setima.html">☕ Sétima Temporada</a>
+    <a href="oitava.html">☕ Oitava Temporada</a>
+    <a href="nona.html">☕ Nona Temporada</a>
+    <a href="decima.html">☕ Décima Temporada</a>
+    <a href="Index.html">☕ Voltar</a>
+  </div>
+
+  <!-- ─── QUIZ ─── -->
+  <div class="quiz-wrapper">
+    <div class="quiz-card" role="main">
+      <div class="header-friends">
+        <div class="logo-area">
+          <span class="logo-icon">☕</span>
+          <span class="title">F·R·I·E·N·D·S</span>
+        </div>
+        <span class="badge-season">✦ T1 · DEUS ✦</span>
+      </div>
+
+      <div class="progress-area">
+        <span class="counter" id="questionCounter">1 / 15</span>
+        <span class="score" id="scoreDisplay">🏆 0</span>
+      </div>
+
+      <div class="question-box">
+        <div class="question-text" id="questionText">Carregando pergunta...</div>
+      </div>
+
+      <div class="options-grid" id="optionsContainer"></div>
+
+      <button class="next-btn" id="nextBtn">▶ PRÓXIMO</button>
+
+      <div id="resultArea" class="result-area hidden">
+        <div class="result-title">☕ CENTRAL PERK ☕</div>
+        <div class="result-score" id="finalScore">0</div>
+        <div class="result-message" id="finalMessage">Você é um verdadeiro amigo!</div>
+        <button class="restart-btn" id="restartBtn">🔄 REINICIAR QUIZ</button>
+      </div>
+
+      <div class="footer-note">✦ 15 perguntas · nível DEUS ✦</div>
+    </div>
+  </div>
+
+  <script>
+    // ─── FUNÇÃO DO MENU ───
+    function toggleMenu() {
+      document.getElementById("menu").classList.toggle("open");
+      document.getElementById("overlay").classList.toggle("show");
+      document.body.style.overflow = document.getElementById("menu").classList.contains("open") ? "hidden" : "";
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const menu = document.getElementById("menu");
+        if (menu.classList.contains("open")) {
+          toggleMenu();
+        }
+      }
+    });
+
+    // ─── QUIZ DA 1ª TEMPORADA ───
+    (function() {
+      const questions = [
+        {
+          question: 'Qual é o nome do café onde os amigos se reúnem?',
+          options: ['Central Perk', 'Café Central', 'Perk Coffee', 'Friends Café'],
+          correct: 0
+        },
+        {
+          question: 'Qual é o nome da ex-esposa lésbica de Ross?',
+          options: ['Carol', 'Susan', 'Emily', 'Rachel'],
+          correct: 0
+        },
+        {
+          question: 'O que Rachel deixou no altar no dia do seu casamento?',
+          options: ['O buquê', 'O véu', 'O noivo (Barry)', 'O vestido'],
+          correct: 2
+        },
+        {
+          question: 'Qual é o medo irracional de Chandler?',
+          options: ['Aranhas', 'Palhaços', 'Pássaros', 'Cachorros'],
+          correct: 1
+        },
+        {
+          question: 'Qual animal de estimação Ross ganhou de presente?',
+          options: ['Um gato', 'Um cachorro', 'Um macaco (Marcel)', 'Um pássaro'],
+          correct: 2
+        },
+        {
+          question: 'Qual é o sobrenome de Phoebe?',
+          options: ['Buffay', 'Geller', 'Green', 'Bing'],
+          correct: 0
+        },
+        {
+          question: 'O que Monica esconde debaixo da cama?',
+          options: ['Caixas de sapatos', 'Revistas', 'Comida', 'Roupas sujas'],
+          correct: 0
+        },
+        {
+          question: 'Qual é a música que Phoebe toca no violão?',
+          options: ['Smelly Cat', 'Funky Cat', 'Stinky Cat', 'Lonely Cat'],
+          correct: 0
+        },
+        {
+          question: 'Quantas irmãs Monica tem?',
+          options: ['0 (só tem o Ross)', '1', '2', '3'],
+          correct: 0
+        },
+        {
+          question: 'Qual é a profissão de Ross?',
+          options: ['Paleontólogo', 'Arqueólogo', 'Professor de História', 'Músico'],
+          correct: 0
+        },
+        {
+          question: 'O que Joey nunca compartilha?',
+          options: ['Comida', 'Roupas', 'Segredos', 'Dinheiro'],
+          correct: 0
+        },
+        {
+          question: 'Qual é o nome do pai de Rachel?',
+          options: ['Leonard', 'Barry', 'Dr. Leonard Green', 'Jack'],
+          correct: 2
+        },
+        {
+          question: 'O que Chandler faz no trabalho (na 1ª temporada)?',
+          options: ['Analista de dados', 'Vendedor', 'Publicitário', 'Gerente de contas'],
+          correct: 0
+        },
+        {
+          question: 'Que tipo de bolo Monica faz para o aniversário de Rachel?',
+          options: ['Chocolate', 'Baunilha', 'Cenoura', 'Morango'],
+          correct: 0
+        },
+        {
+          question: 'Qual o nome da mãe de Ross e Monica?',
+          options: ['Judy', 'Gloria', 'Nora', 'Helen'],
+          correct: 0
+        }
+      ];
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let isAnswered = false;
+      let totalQuestions = questions.length;
+
+      const questionText = document.getElementById('questionText');
+      const optionsContainer = document.getElementById('optionsContainer');
+      const nextBtn = document.getElementById('nextBtn');
+      const questionCounter = document.getElementById('questionCounter');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const resultArea = document.getElementById('resultArea');
+      const finalScore = document.getElementById('finalScore');
+      const finalMessage = document.getElementById('finalMessage');
+      const restartBtn = document.getElementById('restartBtn');
+
+      function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      function getShuffledOptions(q) {
+        const optionObjects = q.options.map((text, idx) => ({
+          text,
+          isCorrect: idx === q.correct
+        }));
+        const shuffled = shuffleArray([...optionObjects]);
+        return shuffled;
+      }
+
+      function renderQuestion() {
+        const q = questions[currentQuestionIndex];
+        if (!q) return;
+
+        questionCounter.textContent = `${currentQuestionIndex + 1} / ${totalQuestions}`;
+        scoreDisplay.textContent = `🏆 ${score}`;
+        questionText.textContent = q.question;
+
+        const shuffledOptions = getShuffledOptions(q);
+        optionsContainer.dataset.correctIndex = shuffledOptions.findIndex(opt => opt.isCorrect === true);
+
+        optionsContainer.innerHTML = '';
+        isAnswered = false;
+        nextBtn.disabled = true;
+
+        const letters = ['A', 'B', 'C', 'D'];
+        shuffledOptions.forEach((opt, index) => {
+          const btn = document.createElement('div');
+          btn.className = 'option-btn';
+          btn.dataset.index = index;
+          btn.dataset.correct = opt.isCorrect ? 'true' : 'false';
+
+          const letterSpan = document.createElement('span');
+          letterSpan.className = 'letter';
+          letterSpan.textContent = letters[index] || '?';
+
+          const textSpan = document.createElement('span');
+          textSpan.textContent = opt.text;
+
+          btn.appendChild(letterSpan);
+          btn.appendChild(textSpan);
+
+          btn.addEventListener('click', optionClickHandler);
+          optionsContainer.appendChild(btn);
+        });
+
+        if (!resultArea.classList.contains('hidden')) {
+          resultArea.classList.add('hidden');
+        }
+      }
+
+      function optionClickHandler(e) {
+        if (isAnswered) return;
+
+        const btn = e.currentTarget;
+        const isCorrect = btn.dataset.correct === 'true';
+        const allOptions = document.querySelectorAll('.option-btn');
+
+        isAnswered = true;
+        nextBtn.disabled = false;
+
+        allOptions.forEach(opt => opt.classList.add('disabled-true'));
+
+        allOptions.forEach(opt => {
+          if (opt.dataset.correct === 'true') {
+            opt.classList.add('correct');
+          }
+        });
+
+        if (!isCorrect) {
+          btn.classList.add('wrong');
+        } else {
+          score++;
+          scoreDisplay.textContent = `🏆 ${score}`;
+        }
+      }
+
+      function handleNext() {
+        if (!isAnswered) return;
+
+        if (currentQuestionIndex + 1 < totalQuestions) {
+          currentQuestionIndex++;
+          renderQuestion();
+        } else {
+          showResult();
+        }
+      }
+
+      function showResult() {
+        document.querySelector('.question-box').style.display = 'none';
+        optionsContainer.style.display = 'none';
+        nextBtn.style.display = 'none';
+        document.querySelector('.progress-area').style.display = 'none';
+        document.querySelector('.footer-note').style.display = 'none';
+
+        resultArea.classList.remove('hidden');
+        finalScore.textContent = `${score} / ${totalQuestions}`;
+
+        let msg = '';
+        if (score === totalQuestions) msg = '👑 DEUS DOS FRIENDS! Você é o Ross da sabedoria!';
+        else if (score >= 12) msg = '☕ Você é um verdadeiro fã! Monica aprova.';
+        else if (score >= 8) msg = '📼 Bom! Joey compartilharia pizza com você.';
+        else if (score >= 4) msg = '🛋️ Talvez precise rever a primeira temporada...';
+        else msg = '😅 "Pivot! Pivot!" — Estude mais, meu amigo.';
+        finalMessage.textContent = msg;
+      }
+
+      function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        isAnswered = false;
+
+        document.querySelector('.question-box').style.display = 'block';
+        optionsContainer.style.display = 'flex';
+        nextBtn.style.display = 'flex';
+        document.querySelector('.progress-area').style.display = 'flex';
+        document.querySelector('.footer-note').style.display = 'block';
+        resultArea.classList.add('hidden');
+
+        renderQuestion();
+        scoreDisplay.textContent = `🏆 0`;
+      }
+
+      nextBtn.addEventListener('click', handleNext);
+      restartBtn.addEventListener('click', restartQuiz);
+
+      renderQuestion();
+
+      document.querySelectorAll('.option-btn, .next-btn, .restart-btn').forEach(el => {
+        el.addEventListener('touchstart', function(e) {
+        }, { passive: true });
+      });
+
+    })();
+  </script>
+</body>
+</html>

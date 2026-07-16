@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0b1a2e 0%, #1c3a5a 40%, #2a1a3b 100%);
+    overflow-x: hidden;
+}
+
+/* ── BOTÃO MENU ── */
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    z-index: 9999;
+    background: linear-gradient(145deg, #5a3724, #2b1b12);
+    color: white;
+    font-size: 30px;
+    box-shadow: 0 0 15px rgba(0,0,0,.4), 0 0 0 3px #b68b2d;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(182, 139, 45, 0.5), 0 0 0 3px #b68b2d;
+}
+
+/* ── MENU LATERAL ── */
+.menu {
+    position: fixed;
+    top: 0;
+    left: -340px;
+    width: 320px;
+    height: 100%;
+    background: linear-gradient(180deg, #3d2417, #21120c);
+    transition: .45s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    box-shadow: 8px 0 30px rgba(0,0,0,.5);
+    z-index: 9998;
+    border-right: 4px solid #b68b2d;
+    padding-bottom: 30px;
+}
+
+.menu.open {
+    left: 0;
+}
+
+.menu-header {
+    padding: 35px 20px 25px;
+    text-align: center;
+    border-bottom: 2px solid rgba(255,255,255,.1);
+}
+
+.menu-header h2 {
+    font-family: "Playfair Display", serif;
+    color: #fff;
+    font-size: 34px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(182, 139, 45, 0.3);
+}
+
+.menu-header .menu-subtitle {
+    color: #b8a880;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    margin-top: 6px;
+    opacity: 0.6;
+}
+
+.lights {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.light {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px currentColor;
+}
+
+.red { background: #ff4141; color: #ff4141; }
+.blue { background: #00bfff; color: #00bfff; }
+.yellow { background: #ffd500; color: #ffd500; }
+
+/* ── DESCRIÇÃO DO APLICATIVO NO MENU ── */
+.menu-description {
+    padding: 20px 24px;
+    margin: 10px 15px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 14px;
+    border: 1px solid rgba(255,215,0,0.08);
+}
+
+.menu-description p {
+    color: #d4c8a0;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.menu-description .highlight {
+    color: #ffd700;
+    font-weight: 600;
+}
+
+.menu-description .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.menu-description .feature-tag {
+    background: rgba(255,215,0,0.08);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    color: #b8a880;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255,215,0,0.05);
+}
+
+.menu a {
+    display: block;
+    text-decoration: none;
+    color: white;
+    padding: 18px 24px;
+    margin: 10px 15px;
+    border-radius: 14px;
+    transition: .25s;
+    background: rgba(255,255,255,.05);
+    border: 2px solid transparent;
+    font-weight: 600;
+    font-size: 0.95rem;
+    position: relative;
+}
+
+.menu a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 0;
+    background: #b68b2d;
+    transition: height 0.3s ease;
+    border-radius: 0 4px 4px 0;
+}
+
+.menu a:hover::before {
+    height: 70%;
+}
+
+.menu a:hover {
+    background: #b68b2d;
+    color: #222;
+    transform: translateX(8px);
+    border-color: #d4a53a;
+}
+
+.menu-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.15), transparent);
+    margin: 8px 15px;
+}
+
+/* ── OVERLAY ── */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    opacity: 0;
+    visibility: hidden;
+    transition: .4s;
+    z-index: 9997;
+    backdrop-filter: blur(4px);
+}
+
+.overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ── CONTEÚDO PRINCIPAL ── */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 20px 60px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── ANIMAÇÃO DE FUNDO ── */
+.bg-decoration {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.bg-decoration .coffee-cup {
+    position: absolute;
+    font-size: 300px;
+    opacity: 0.04;
+    right: -50px;
+    bottom: -50px;
+    transform: rotate(-10deg);
+}
+
+.bg-decoration .coffee-cup2 {
+    position: absolute;
+    font-size: 200px;
+    opacity: 0.03;
+    left: -60px;
+    top: 20%;
+    transform: rotate(20deg);
+}
+
+/* ── HEADER PRINCIPAL ── */
+.main-header {
+    text-align: center;
+    padding: 50px 30px 40px;
+    background: rgba(255, 242, 220, 0.10);
+    backdrop-filter: blur(12px);
+    border-radius: 60px;
+    margin-bottom: 50px;
+    border: 2px solid rgba(255, 215, 0, 0.2);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInDown 1s ease-out;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.main-header .logo-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 10px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.main-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    background: linear-gradient(180deg, #ffed4a, #f7d44a, #ca9e2e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 4px;
+    text-shadow: none;
+}
+
+.main-header .subtitle {
+    color: #d4c8a0;
+    font-size: 1.2rem;
+    margin-top: 8px;
+    letter-spacing: 4px;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+.main-header .tagline {
+    color: #b8a880;
+    font-size: 0.9rem;
+    margin-top: 15px;
+    letter-spacing: 2px;
+    opacity: 0.6;
+}
+
+/* ── LUZES DECORATIVAS ── */
+.lights-decoration {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.light-bulb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    animation: glow 2s ease-in-out infinite;
+}
+
+.light-bulb:nth-child(1) { background: #ff4141; color: #ff4141; animation-delay: 0s; }
+.light-bulb:nth-child(2) { background: #00bfff; color: #00bfff; animation-delay: 0.3s; }
+.light-bulb:nth-child(3) { background: #ffd700; color: #ffd700; animation-delay: 0.6s; }
+.light-bulb:nth-child(4) { background: #00ff88; color: #00ff88; animation-delay: 0.9s; }
+.light-bulb:nth-child(5) { background: #ff6b6b; color: #ff6b6b; animation-delay: 1.2s; }
+.light-bulb:nth-child(6) { background: #4ecdc4; color: #4ecdc4; animation-delay: 1.5s; }
+.light-bulb:nth-child(7) { background: #ffe66d; color: #ffe66d; animation-delay: 1.8s; }
+.light-bulb:nth-child(8) { background: #a29bfe; color: #a29bfe; animation-delay: 2.1s; }
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 10px currentColor, 0 0 20px currentColor; opacity: 1; }
+    50% { box-shadow: 0 0 30px currentColor, 0 0 60px currentColor; opacity: 0.8; }
+}
+
+/* ─── GRADE DE TEMPORADAS ─── */
+.season-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    animation: fadeInUp 1.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── CARD DE TEMPORADA ─── */
+.season-card {
+    background: rgba(255, 242, 220, 0.92);
+    backdrop-filter: blur(8px);
+    border-radius: 32px;
+    padding: 22px 20px 26px;
+    border: 2px solid rgba(255, 215, 0, 0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.season-card::after {
+    content: '▶';
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    font-size: 1.2rem;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s;
+    color: #ca9e2e;
+}
+
+.season-card:hover::after {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.season-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+.season-card:active {
+    transform: scale(0.97);
+}
+
+/* ── CORES DAS TEMPORADAS ── */
+.season-card.t1 { border-left: 6px solid #f7d44a; }
+.season-card.t2 { border-left: 6px solid #b886ff; }
+.season-card.t3 { border-left: 6px solid #6ab04a; }
+.season-card.t4 { border-left: 6px solid #e07b3a; }
+.season-card.t5 { border-left: 6px solid #4a8ab0; }
+.season-card.t6 { border-left: 6px solid #c97a3a; }
+.season-card.t7 { border-left: 6px solid #c97aff; }
+.season-card.t8 { border-left: 6px solid #a86ae0; }
+.season-card.t9 { border-left: 6px solid #4a8ab0; }
+.season-card.t10 { border-left: 6px solid #ffd700; }
+
+.season-number {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #8a7a5a;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.season-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2d1b0e;
+    margin: 2px 0 6px;
+}
+
+.season-icon {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.season-card .play-hint {
+    font-size: 0.75rem;
+    color: #8a7a5a;
+    opacity: 0.6;
+    letter-spacing: 1px;
+    margin-top: 12px;
+    display: block;
+}
+
+/* ─── IMAGENS DOS PERSONAGENS ─── */
+.character-images {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 30px 0 20px;
+    flex-wrap: wrap;
+    animation: fadeInUp 1.6s ease-out;
+}
+
+.character-emoji {
+    font-size: 3.5rem;
+    transition: all 0.3s;
+    cursor: default;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    animation: float 4s ease-in-out infinite;
+    display: inline-block;
+}
+
+.character-emoji:nth-child(1) { animation-delay: 0s; }
+.character-emoji:nth-child(2) { animation-delay: 0.4s; }
+.character-emoji:nth-child(3) { animation-delay: 0.8s; }
+.character-emoji:nth-child(4) { animation-delay: 1.2s; }
+.character-emoji:nth-child(5) { animation-delay: 1.6s; }
+.character-emoji:nth-child(6) { animation-delay: 2.0s; }
+
+.character-emoji:hover {
+    transform: scale(1.2) rotate(-5deg);
+}
+
+.character-label {
+    font-size: 0.6rem;
+    color: #b8a880;
+    text-align: center;
+    margin-top: 2px;
+    letter-spacing: 1px;
+    opacity: 0.6;
+}
+
+.character-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ─── FOOTER ─── */
+.footer {
+    text-align: center;
+    margin-top: 60px;
+    padding: 30px 20px 20px;
+    border-top: 1px solid rgba(255,215,0,0.08);
+    color: #6a5a3a;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    opacity: 0.5;
+}
+
+.footer .heart {
+    color: #ff6b6b;
+}
+
+/* ─── RESPONSIVO ─── */
+@media (max-width: 700px) {
+    .menu { width: 85%; }
+    .menu-btn { width: 55px; height: 55px; font-size: 28px; top: 15px; left: 15px; }
+    .main-header h1 { font-size: 3rem; }
+    .main-header { padding: 30px 20px; }
+    .container { padding: 80px 12px 40px; }
+    .season-grid { grid-template-columns: 1fr 1fr; }
+    .character-emoji { font-size: 2.8rem; }
+    .character-images { gap: 6px; }
+}
+
+@media (max-width: 480px) {
+    .main-header h1 { font-size: 2.2rem; }
+    .main-header .subtitle { font-size: 0.9rem; }
+    .main-header .logo-icon { font-size: 3rem; }
+    .season-grid { grid-template-columns: 1fr; }
+    .season-title { font-size: 1.3rem; }
+    .menu-btn { width: 48px; height: 48px; font-size: 24px; top: 12px; left: 12px; }
+    .light-bulb { width: 14px; height: 14px; }
+    .character-emoji { font-size: 2.2rem; }
+    .character-label { font-size: 0.5rem; }
+    .character-images { gap: 4px; }
+}
+
+@media (max-width: 380px) {
+    .main-header h1 { font-size: 1.8rem; }
+    .main-header { border-radius: 30px; padding: 20px 15px; }
+    .character-emoji { font-size: 1.8rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── FUNDO DECORATIVO ─── -->
+<div class="bg-decoration">
+    <div class="coffee-cup">☕</div>
+    <div class="coffee-cup2">☕</div>
+</div>
+
+<!-- ─── BOTÃO MENU ─── -->
+<button class="menu-btn" onclick="toggleMenu()" aria-label="Abrir menu">☰</button>
+
+<!-- ─── OVERLAY ─── -->
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<!-- ─── MENU LATERAL ─── -->
+<div class="menu" id="menu">
+    <div class="menu-header">
+        <h2>FRIENDS</h2>
+        <div class="menu-subtitle">✦ QUIZ ✦</div>
+        <div class="lights">
+            <div class="light red"></div>
+            <div class="light blue"></div>
+            <div class="light yellow"></div>
+            <div class="light red"></div>
+            <div class="light blue"></div>
+            <div class="light yellow"></div>
+        </div>
+    </div>
+
+    <!-- ─── DESCRIÇÃO DO APLICATIVO ─── -->
+    <div class="menu-description">
+        <p>
+            <span class="highlight">☕ Friends Quiz</span> é um jogo interativo que testa seus conhecimentos sobre a série mais amada de todos os tempos.
+        </p>
+        <p>
+            <span class="highlight">📺 10 Temporadas</span> • <span class="highlight">150 Perguntas</span> • Nível <span class="highlight">DEUS</span>
+        </p>
+        <div class="features">
+            <span class="feature-tag">🎯 15 Perguntas por Temporada</span>
+            <span class="feature-tag">💾 Progresso Salvo</span>
+            <span class="feature-tag">📱 Responsivo</span>
+            <span class="feature-tag">🏆 Medalhas</span>
+            <span class="feature-tag">🎨 Design Temático</span>
+        </div>
+    </div>
+
+    <div class="menu-divider"></div>
+
+    <a href="primeira.html">🌟 Primeira Temporada</a>
+    <a href="segunda.html">✨ Segunda Temporada</a>
+    <a href="terceira.html">🌿 Terceira Temporada</a>
+    <a href="quarta.html">🔥 Quarta Temporada</a>
+    <a href="quinta.html">🌊 Quinta Temporada</a>
+    <a href="sexta.html">🍂 Sexta Temporada</a>
+    <a href="setima.html">💜 Sétima Temporada</a>
+    <a href="oitava.html">👶 Oitava Temporada</a>
+    <a href="nona.html">🌅 Nona Temporada</a>
+    <a href="decima.html">🏆 Décima Temporada</a>
+</div>
+
+<!-- ─── CONTEÚDO PRINCIPAL ─── -->
+<div class="container">
+
+    <!-- HEADER PRINCIPAL -->
+    <header class="main-header">
+        <span class="logo-icon">☕</span>
+        <h1>CENTRAL PERK</h1>
+        <p class="subtitle">✦ FRIENDS QUIZ ✦</p>
+        <p class="tagline">Teste seus conhecimentos sobre as 10 temporadas</p>
+        <div class="lights-decoration">
+            <span class="light-bulb"></span>
+            <span class="light-bulb"></span>
+            <span class="light-bulb"></span>
+            <span class="light-bulb"></span>
+            <span class="light-bulb"></span>
+            <span class="light-bulb"></span>
+            <span class="light-bulb"></span>
+            <span class="light-bulb"></span>
+        </div>
+    </header>
+
+    <!-- ─── IMAGENS DOS PERSONAGENS ─── -->
+    <div class="character-images">
+        <div class="character-item">
+            <span class="character-emoji">👱‍♂️</span>
+            <span class="character-label">Ross</span>
+        </div>
+        <div class="character-item">
+            <span class="character-emoji">👩‍🦳</span>
+            <span class="character-label">Rachel</span>
+        </div>
+        <div class="character-item">
+            <span class="character-emoji">👨‍🦱</span>
+            <span class="character-label">Chandler</span>
+        </div>
+        <div class="character-item">
+            <span class="character-emoji">👩‍🦰</span>
+            <span class="character-label">Monica</span>
+        </div>
+        <div class="character-item">
+            <span class="character-emoji">🧔</span>
+            <span class="character-label">Joey</span>
+        </div>
+        <div class="character-item">
+            <span class="character-emoji">👩‍🦱</span>
+            <span class="character-label">Phoebe</span>
+        </div>
+    </div>
+
+    <!-- GRADE DE TEMPORADAS -->
+    <div class="season-grid" id="seasonGrid">
+        <!-- Os cards serão gerados dinamicamente -->
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <span>☕ Feito com <span class="heart">❤</span> para fãs de Friends • 10 Temporadas • 150 Perguntas</span>
+    </div>
+</div>
+
+<script>
+// ─── CONFIGURAÇÃO DAS TEMPORADAS ───
+const seasons = [
+    { id: 1, title: 'Primeira Temporada', file: 'primeira.html', icon: '🌟', borderClass: 't1' },
+    { id: 2, title: 'Segunda Temporada', file: 'segunda.html', icon: '✨', borderClass: 't2' },
+    { id: 3, title: 'Terceira Temporada', file: 'terceira.html', icon: '🌿', borderClass: 't3' },
+    { id: 4, title: 'Quarta Temporada', file: 'quarta.html', icon: '🔥', borderClass: 't4' },
+    { id: 5, title: 'Quinta Temporada', file: 'quinta.html', icon: '🌊', borderClass: 't5' },
+    { id: 6, title: 'Sexta Temporada', file: 'sexta.html', icon: '🍂', borderClass: 't6' },
+    { id: 7, title: 'Sétima Temporada', file: 'setima.html', icon: '💜', borderClass: 't7' },
+    { id: 8, title: 'Oitava Temporada', file: 'oitava.html', icon: '👶', borderClass: 't8' },
+    { id: 9, title: 'Nona Temporada', file: 'nona.html', icon: '🌅', borderClass: 't9' },
+    { id: 10, title: 'Décima Temporada', file: 'decima.html', icon: '🏆', borderClass: 't10' }
+];
+
+// ─── RENDERIZAR CARDS ───
+function renderCards() {
+    const grid = document.getElementById('seasonGrid');
+    grid.innerHTML = '';
+
+    seasons.forEach(s => {
+        const card = document.createElement('a');
+        card.className = `season-card ${s.borderClass}`;
+        card.href = s.file;
+        card.innerHTML = `
+            <span class="season-number">TEMPORADA ${s.id}</span>
+            <span class="season-icon">${s.icon}</span>
+            <div class="season-title">${s.title}</div>
+            <span class="play-hint">🎯 Clique para jogar</span>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// ─── FUNÇÃO DO MENU ───
+function toggleMenu() {
+    document.getElementById("menu").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+
+// ─── FECHAR MENU COM ESC ───
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const menu = document.getElementById("menu");
+        if (menu.classList.contains("open")) {
+            toggleMenu();
+        }
+    }
+});
+
+// ─── INICIALIZAR ───
+renderCards();
+
+console.log('☕ Central Perk - Bem-vindo ao Friends Quiz!');
+console.log('📺 10 Temporadas • 150 Perguntas • Nível DEUS');
+console.log('🎯 Escolha uma temporada e comece a jogar!');
+</script>
+
+</body>
+</html>
